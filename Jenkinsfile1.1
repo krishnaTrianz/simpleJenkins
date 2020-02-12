@@ -1,1 +1,75 @@
 
+
+pipeline {
+    agent any
+    stages {
+        
+        stage('Starting Stage'){
+            
+            steps{
+                                              
+                // git "https://github.com/jenkins-docs/simple-java-maven-app"
+                
+                echo "staring .... ${env.YourTag}"
+               
+               echo "https://github.com/jenkins-docs/simple-java-maven-app${env.YourTag}"
+            }
+            
+        }
+        
+        
+      stage('1.1 Stage-1'){
+          when {
+              // A or B
+              expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
+             }
+            steps{
+             echo ' stage 1 starts ....'
+            }
+        }
+
+
+      stage('1.1 Stage-2') {
+            when {
+              // A or B
+              expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
+             }
+            steps {
+                input message:'Do you want to continuw the JOB?', ok: 'Yes'
+                echo 'Stage-2 starts.....'
+               
+            }
+        }
+
+        stage('1.1 Stage-3'){
+            when {
+              // A or B
+              expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
+             }
+            steps{
+                echo 'Stage-3 starts.....'
+                // try{
+                //  sh 'mvn clean'   
+                // }catch(err){
+                //   buildResult 'SUCCESS', stageResult 'FAILURE'  
+                //     bat "exit 1"  
+                // }
+            
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    bat 'mvn --version'   
+                    //bat "exit 1"
+                }
+                
+             // echo currentBuild.rawBuild.getPreviousBuild()
+            }
+            
+        }
+              
+        stage('Final Stage'){
+            steps{
+                echo 'Stages completed'
+            }
+        }
+        
+    }
+}
