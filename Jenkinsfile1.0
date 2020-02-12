@@ -1,1 +1,98 @@
 
+List<String> CHOICES = [];
+pipeline {
+    agent any
+    stages {
+        
+        stage('Starting Stage'){
+            
+            steps{
+                
+                script{
+                    CHOICES = ["1.0", "1.1", "1.2","1.3"];    
+                    env.YourTag = input  message: 'What are we deploying today?',ok : 'Deploy',id :'tag_id',
+                    parameters:[choice(choices: CHOICES, description: 'Select a tag for this build', name: 'TAG')]
+                    
+                }
+                
+                // git "https://github.com/jenkins-docs/simple-java-maven-app"
+                
+                echo "staring .... ${env.YourTag}"
+               
+               echo "https://github.com/jenkins-docs/simple-java-maven-app${env.YourTag}"
+            }
+            
+        }
+        
+        
+      stage('Stage-1'){
+          when {
+              // A or B
+              expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
+             }
+            steps{
+             echo ' stage 1 starts ....'
+            }
+        }
+
+
+      stage('Stage-2') {
+            when {
+              // A or B
+              expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
+             }
+            steps {
+                input message:'Do you want to continuw the JOB?', ok: 'Yes'
+                echo 'Stage-2 starts.....'
+               
+            }
+        }
+
+        stage('Stage-3'){
+            when {
+              // A or B
+              expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
+             }
+            steps{
+                echo 'Stage-3 starts.....'
+                // try{
+                //  sh 'mvn clean'   
+                // }catch(err){
+                //   buildResult 'SUCCESS', stageResult 'FAILURE'  
+                //     bat "exit 1"  
+                // }
+            
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    bat 'mvn --version'   
+                    //bat "exit 1"
+                }
+                
+             // echo currentBuild.rawBuild.getPreviousBuild()
+            }
+            
+        }
+        
+        stage('Satge-4'){
+            when {
+              // A or B
+              expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
+             }
+            steps{
+                echo 'Stage-4 starts ....'
+                // if (currentBuild?.getPreviousBuild()?.result == 'FAILURE') {
+                //   echo 'fails'
+                // }
+               
+             echo   'currentBuild.previousBuild'
+                 }
+                 
+        }
+        
+        stage('Final Stage'){
+            steps{
+                echo 'Stages completed'
+            }
+        }
+        
+    }
+}
