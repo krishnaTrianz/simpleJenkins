@@ -24,6 +24,7 @@ pipeline {
         //     }
             steps{
              echo ' stage 1 starts ....'
+             echo "${env.EXECUTOR_NUMBER}"
             }
         }
 
