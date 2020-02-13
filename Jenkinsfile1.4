@@ -28,41 +28,7 @@ pipeline {
         }
 
 
-      stage('1.4 Stage-2') {
-        //    when {
-              // A or B
-        //      expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
-        //     }
-            steps {
-                input message:'Do you want to continuw the JOB?', ok: 'Yes'
-                echo 'Stage-2 starts.....'
-               
-            }
-        }
-
-        stage('1.4 Stage-3'){
-      //      when {
-              // A or B
-       //       expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
-       //      }
-            steps{
-                echo 'Stage-3 starts.....'
-                // try{
-                //  sh 'mvn clean'   
-                // }catch(err){
-                //   buildResult 'SUCCESS', stageResult 'FAILURE'  
-                //     bat "exit 1"  
-                // }
-            
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    bat 'mvn --version'   
-                    //bat "exit 1"
-                }
-                
-             // echo currentBuild.rawBuild.getPreviousBuild()
-            }
-            
-        }
+     
               
         stage('Final Stage'){
             steps{
