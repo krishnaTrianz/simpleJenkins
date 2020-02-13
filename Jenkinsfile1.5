@@ -18,10 +18,10 @@ pipeline {
         
         
       stage('1.5 Stage-1'){
-          when {
+        //  when {
               // A or B
-              expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
-             }
+        //      expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
+        //     }
             steps{
              echo ' stage 1 starts ....'
             }
@@ -29,10 +29,10 @@ pipeline {
 
 
       stage('1.5 Stage-2') {
-            when {
+        //    when {
               // A or B
-              expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
-             }
+      //        expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
+       //      }
             steps {
                 input message:'Do you want to continuw the JOB?', ok: 'Yes'
                 echo 'Stage-2 starts.....'
@@ -41,10 +41,10 @@ pipeline {
         }
 
         stage('1.5 Stage-3'){
-            when {
+         //   when {
               // A or B
-              expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
-             }
+         //     expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
+         //    }
             steps{
                 echo 'Stage-3 starts.....'
                 // try{
