@@ -43,6 +43,18 @@ pipeline {
                      
         stage('Final Stage'){
             steps{
+             contentReplace(
+    configs: [
+        fileContentReplaceConfig(
+            configs: [
+                fileContentReplaceItemConfig(
+                    search: "1.5",
+                    replace: '',
+                    matchCount: 1)
+                ],
+            fileEncoding: 'UTF-8',
+            filePath: "C:/KrishnaWorks/Parameters.txt")
+        ])
                 echo 'Stages completed'
             }
         }
