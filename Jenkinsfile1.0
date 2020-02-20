@@ -70,18 +70,9 @@ pipeline {
                 
         stage('Final Stage'){
             steps{
-             contentReplace(
-    configs: [
-        fileContentReplaceConfig(
-            configs: [
-                fileContentReplaceItemConfig(
-                    search: "1.0}",
-                    replace: '',
-                    matchCount: 1)
-                ],
-            fileEncoding: 'UTF-8',
-            filePath: "C:/KrishnaWorks/Parameters.txt")
-        ])
+                writeFile file: 'D:\\KrishnaWorks\\test.properties', 
+                text: "${PipeLineTag}stage1=SUCCESS\n${PipeLineTag}stage2=SUCCESS"
+                echo 'Stages completed'
                 echo 'Stages completed'
             }
         }
