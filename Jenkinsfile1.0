@@ -1,5 +1,7 @@
-
-List<String> CHOICES = [];
+PipeLineTag = 1.0;
+stage1 = null;
+stage2=null;
+stage3=null;
 pipeline {
     agent any
     stages {
@@ -7,30 +9,24 @@ pipeline {
         stage('Starting Stage'){
             
             steps{
-                
-                script{
-                    CHOICES = ["1.0", "1.1", "1.2","1.3"];    
-                    env.YourTag = input  message: 'What are we deploying today?',ok : 'Deploy',id :'tag_id',
-                    parameters:[choice(choices: CHOICES, description: 'Select a tag for this build', name: 'TAG')]
-                    
+               script{
+                def props = readProperties  file:'D:/KrishnaWorks/test.properties'
+                 stage1= props["${PipeLineTag}stage1"]
+                 stage2= props["${PipeLineTag}stage2"]
+                 stage3= props["${PipeLineTag}stage3"]
+                echo "Var1=${stage1}"
+                echo "Var2=${stage2}"
                 }
-                
-                // git "https://github.com/jenkins-docs/simple-java-maven-app"
-                
-                echo "staring .... ${env.YourTag}"
-               
-               echo "https://github.com/jenkins-docs/simple-java-maven-app${env.YourTag}"
-            }
-            
-        }
-        
+             
+            }     
         
       stage('Stage-1'){
           when {
               // A or B
-              expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
+              expression { return stage1 == null || stage1 == 'FAILURE' }
              }
             steps{
+             input message:'Do you want to continuw the JOB?', ok: 'Yes'
              echo ' stage 1 starts ....'
             }
         }
@@ -39,10 +35,9 @@ pipeline {
       stage('Stage-2') {
             when {
               // A or B
-              expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
+              expression { return stage2 == null || stage2 == 'FAILURE' }
              }
             steps {
-                input message:'Do you want to continuw the JOB?', ok: 'Yes'
                 echo 'Stage-2 starts.....'
                
             }
@@ -51,7 +46,7 @@ pipeline {
         stage('Stage-3'){
             when {
               // A or B
-              expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
+              expression { return stage3 == null || stage3 == 'FAILURE' }
              }
             steps{
                 echo 'Stage-3 starts.....'
@@ -72,22 +67,7 @@ pipeline {
             
         }
         
-        stage('Satge-4'){
-            when {
-              // A or B
-              expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
-             }
-            steps{
-                echo 'Stage-4 starts ....'
-                // if (currentBuild?.getPreviousBuild()?.result == 'FAILURE') {
-                //   echo 'fails'
-                // }
-               
-             echo   'currentBuild.previousBuild'
-                 }
-                 
-        }
-        
+                
         stage('Final Stage'){
             steps{
              contentReplace(
