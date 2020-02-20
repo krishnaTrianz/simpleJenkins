@@ -1,4 +1,7 @@
-
+PipeLineTag = 1.1;
+stage1 = null;
+stage2=null;
+stage3=null;
 
 pipeline {
     agent any
@@ -7,46 +10,49 @@ pipeline {
         stage('Starting Stage'){
             
             steps{
-                                              
-                // git "https://github.com/jenkins-docs/simple-java-maven-app"
-                
-                echo "staring .... ${env.YourTag}"
-               
-               echo "https://github.com/jenkins-docs/simple-java-maven-app${env.YourTag}"
+               script{
+                def props = readProperties  file:'D:/KrishnaWorks/test.properties'
+                 stage1= props["${PipeLineTag}stage1"]
+                 stage2= props["${PipeLineTag}stage2"]
+                 stage3= props["${PipeLineTag}stage3"]
+                echo "Var1=${stage1}"
+                echo "Var2=${stage2}"
+                }
             }
             
         }
         
         
       stage('1.1 Stage-1'){
-         // when {
-              // A or B
-         //     expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
-        //     }
+          when {
+              
+             expression { return stage1 == null || stage1 == 'FAILURE' }
+            }
             steps{
              echo ' stage 1 starts ....'
-             echo "${env.EXECUTOR_NUMBER}"
+              input message:'Do you want to continuw the JOB?', ok: 'Yes'
+             //echo "${env.EXECUTOR_NUMBER}"
             }
         }
 
 
       stage('1.1 Stage-2') {
-         //   when {
-              // A or B
-        //      expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
-        //     }
+            when {
+              
+              expression { return stage2 == null || stage2 == 'FAILURE' }
+             }
             steps {
-                input message:'Do you want to continuw the JOB?', ok: 'Yes'
+               
                 echo 'Stage-2 starts.....'
                
             }
         }
 
         stage('1.1 Stage-3'){
-         //   when {
-              // A or B
-         //     expression { return currentBuild.previousBuild == null || currentBuild.previousBuild.result == 'FAILURE' }
-        //     }
+           when {
+              
+             expression { return stage3 == null || stage3 == 'FAILURE'  }
+            }
             steps{
                 echo 'Stage-3 starts.....'
                 // try{
@@ -56,10 +62,10 @@ pipeline {
                 //     bat "exit 1"  
                 // }
             
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    bat 'mvn --version'   
+              //  catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+             //       bat 'mvn --version'   
                     //bat "exit 1"
-                }
+              //  }
                 
              // echo currentBuild.rawBuild.getPreviousBuild()
             }
@@ -68,19 +74,10 @@ pipeline {
               
         stage('Final Stage'){
             steps{
-             contentReplace(
-    configs: [
-        fileContentReplaceConfig(
-            configs: [
-                fileContentReplaceItemConfig(
-                    search: "1.1",
-                    replace: '',
-                    matchCount: 1)
-                ],
-            fileEncoding: 'UTF-8',
-            filePath: "C:/KrishnaWorks/Parameters.txt")
-        ])
+              writeFile file: 'D:\\KrishnaWorks\\test.properties', 
+                text: "${PipeLineTag}stage1=SUCCESS\n${PipeLineTag}stage2=SUCCESS"
                 echo 'Stages completed'
+            echo 'Stages completed'
             }
         }
         
