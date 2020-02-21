@@ -1,7 +1,33 @@
-PipeLineTag = 1.3;
+PipeLineTag = 1.2;
 stage1 = null;
 stage2=null;
 stage3=null;
+def props ;
+properties = null     
+
+def loadProperties() {
+    node {
+        //checkout scm
+        properties = new Properties()
+        File propertiesFile = new File("D:/KrishnaWorks/test.properties")
+        properties.load(propertiesFile.newDataInputStream())
+        //echo "Immediate one ${properties}"
+    }
+}
+
+def setProperties() {
+    node {
+        //checkout scm
+       // properties = new Properties()
+       // File propertiesFile = new File("D:/KrishnaWorks/test.properties")
+       FileOutputStream out = new FileOutputStream("D:/KrishnaWorks/test.properties");
+        properties.setProperty("${PipeLineTag}stage1","${stage1}")
+        properties.setProperty("${PipeLineTag}stage2","SUCCESS")
+        properties.setProperty("${PipeLineTag}stage3","SUCCESS")
+        properties.store(out, null);
+        //echo "Immediate one ${properties}"
+    }
+}
 
 pipeline {
     agent any
@@ -10,74 +36,125 @@ pipeline {
         stage('Starting Stage'){
             
             steps{
-               script{
-                def props = readProperties  file:'D:/KrishnaWorks/test.properties'
-                 stage1= props["${PipeLineTag}stage1"]
-                 stage2= props["${PipeLineTag}stage2"]
-                 stage3= props["${PipeLineTag}stage3"]
-                echo "Var1=${stage1}"
-                echo "Var2=${stage2}"
+                script{
+                 //props = readProperties  file:'D:/KrishnaWorks/test.properties'
+                 loadProperties()
+                 stage1= properties["${PipeLineTag}stage1"]
+                 stage2= properties["${PipeLineTag}stage2"]
+                 stage3= properties["${PipeLineTag}stage3"]
+                //echo "Var1=${stage1}"
+               // echo "Var2=${stage2}"
+                
                 }
+            //     script{
+            //   env.YourTag =   input message: '', parameters: [extendedChoice(description: '', 
+            //      multiSelectDelimiter: ',', name: 'PipeLineTag', 
+            //      propertyFile: 'C:\\KrishnaWorks\\Parameters.txt', 
+            //      propertyKey: 'PipeLineTag', 
+            //      quoteValue: false, saveJSONParameterToFile: false, type: 'PT_SINGLE_SELECT',
+            //      visibleItemCount: 100)]
+            //     }
+                
+              //  script{
+              //      CHOICES = ["1.0", "1.1", "1.2","1.3"];    
+              //      env.YourTag = input  message: 'What are we deploying today?',ok : 'Deploy',id :'tag_id',
+              //      parameters:[choice(choices: CHOICES, description: 'Select a tag for this build', name: 'TAG')]
+                    
+               // }
+                
+                // git "https://github.com/jenkins-docs/simple-java-maven-app"
+                
+                echo "staring .... ${PipeLineTag}"
+               
+               echo "........."
             }
             
         }
         
         
-      stage('1.3 Stage-1'){
+      stage('Stage-1'){
           when {
-              
-             expression { return stage1 == null || stage1 == 'FAILURE' }
-            }
+              // A or B
+              expression { return stage1 == null || stage1 == 'FAILURE' }
+             }
             steps{
-             echo ' stage 1 starts ....'
-              input message:'Do you want to continuw the JOB?', ok: 'Yes'
-             //echo "${env.EXECUTOR_NUMBER}"
+                script{
+                        try{
+                              echo ' stage 1 starts ....'
+                              
+                        }catch(Exception e){
+                             stage1 ="FAILURE"
+                             catchError(stageResult: 'FAILURE') {
+                             error "throwing Error"
+                            }
+                           
+                        }
+                    
+                }
+            
+                        
             }
         }
 
 
-      stage('1.3 Stage-2') {
+      stage('Stage-2') {
             when {
-              
+              // A or B
               expression { return stage2 == null || stage2 == 'FAILURE' }
              }
             steps {
-               
+              //  input message:'Do you want to continuw the JOB?', ok: 'Yes'
                 echo 'Stage-2 starts.....'
+                script{
+                    stage2 = currentBuild.result
+                         //echo "${stage2} stage 1 starts .... ${currentBuild.result}"
+                }
                
             }
         }
 
-        stage('1.3 Stage-3'){
-           when {
-              
-             expression { return stage3 == null || stage3 == 'FAILURE'  }
+        stage('Stage-3'){
+            when {
+              // A or B
+             expression { return stage3 == null || stage3 == 'FAILURE' }
             }
             steps{
-                echo 'Stage-3 starts.....'
-                // try{
-                //  sh 'mvn clean'   
-                // }catch(err){
-                //   buildResult 'SUCCESS', stageResult 'FAILURE'  
-                //     bat "exit 1"  
-                // }
-            
-              //  catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-             //       bat 'mvn --version'   
-                    //bat "exit 1"
-              //  }
                 
-             // echo currentBuild.rawBuild.getPreviousBuild()
+              //  echo "${PipeLineTag}"
+               catchError(message: 'STAGE ERROR') {
+               //  ome block
+             echo 'Stage-3 starts.....'
+                }
+              
             }
             
         }
-              
+        
+       
+        
         stage('Final Stage'){
             steps{
-              writeFile file: 'D:\\KrishnaWorks\\test.properties', 
-                text: "${PipeLineTag}stage1=SUCCESS\n${PipeLineTag}stage2=SUCCESS"
+    //              catchError(message: 'STAGE ERROR') {
+    //              contentReplace(
+    // configs: [
+    //     fileContentReplaceConfig(
+    //         configs: [
+    //             fileContentReplaceItemConfig(
+    //                 search: "${env.YourTag}",
+    //                 replace: '',
+    //                 matchCount: 1)
+    //             ],
+    //         fileEncoding: 'UTF-8',
+    //         filePath: "D:/KrishnaWorks/Parameters.txt")
+    //     ])
+    //              }
+                
+                
+               // writeFile file: 'D:\\KrishnaWorks\\test.properties', 
+             //   text: "${props}\n${PipeLineTag}stage1=SUCCESS\n${PipeLineTag}stage2=SUCCESS\n${PipeLineTag}stage3=SUCCESS"
+                buildName "${PipeLineTag}"
+                setProperties()
                 echo 'Stages completed'
-            echo 'Stages completed'
             }
         }
         
