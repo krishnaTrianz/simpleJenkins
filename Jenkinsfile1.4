@@ -1,4 +1,4 @@
-PipeLineTag = 1.2;
+PipeLineTag = 1.4;
 stage1 = null;
 stage2=null;
 stage3=null;
@@ -72,7 +72,7 @@ pipeline {
         }
         
         
-      stage('Stage-1'){
+      stage('Non-Prod Sync'){
           when {
               // A or B
               expression { return stage1 == null || stage1 == 'FAILURE' }
@@ -97,7 +97,7 @@ pipeline {
         }
 
 
-      stage('Stage-2') {
+      stage('Non-Prod Sync 2') {
             when {
               // A or B
               expression { return stage2 == null || stage2 == 'FAILURE' }
@@ -113,7 +113,7 @@ pipeline {
             }
         }
 
-        stage('Stage-3'){
+        stage('Prod Sync'){
             when {
               // A or B
              expression { return stage3 == null || stage3 == 'FAILURE' }
