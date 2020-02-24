@@ -81,7 +81,7 @@ pipeline {
                 script{
                         try{
                               sh ' stage 1 starts ....'
-                              
+                              stage1 ="SUCCESS"
                         }catch(Exception e){
                              stage1 ="FAILURE"
                              catchError(stageResult: 'FAILURE') {
