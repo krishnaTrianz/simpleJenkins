@@ -65,7 +65,7 @@ pipeline {
                 // git "https://github.com/jenkins-docs/simple-java-maven-app"
                 
                 echo "staring .... ${PipeLineTag}"
-               
+                input message:'Do you want to continuw the JOB?', ok: 'Yes'
                echo "........."
             }
             
