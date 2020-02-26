@@ -1,4 +1,4 @@
-PipeLineTag = 1.0;
+PipeLineTag = "USCM_IM_Synchos_july19_CBS";
 stage1 = null;
 stage2=null;
 stage3=null;
